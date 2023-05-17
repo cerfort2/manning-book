@@ -11,6 +11,7 @@ network_name = f'{TEAM}-{ENVIRONMENT}-network-{VERSION}'
 
 server_name = f'{TEAM}-{ENVIRONMENT}-server-{VERSION}'
 
+#Labels the new version of the cluster “green”
 cluster_name = f'{TEAM}-{ENVIRONMENT}-cluster-{VERSION}'
 cluster_nodes = f'{TEAM}-{ENVIRONMENT}-cluster-nodes-{VERSION}'
 cluster_service_account = f'{TEAM}-{ENVIRONMENT}-sa-{VERSION}'
@@ -23,7 +24,7 @@ labels = {
 }
 
 
-def build():
+def build(): #Uses the module to create the JSON configuration for the network, subnetwork, and cluster for the green network
     return network() + \
         server0() + \
         server1() + \
@@ -55,13 +56,14 @@ def network(name=network_name,
         }
     ]
 
-
+#Passes required attributes to the cluster, including name, node names, service accounts for automation, and region
 def cluster(name=cluster_name,
             node_name=cluster_nodes,
             service_account=cluster_service_account,
             region=REGION):
     return [
         {
+            #Creates the Google container cluster by using a Terraform resource with one node and on the green network
             'google_container_cluster': {
                 VERSION: [
                     {
@@ -69,6 +71,7 @@ def cluster(name=cluster_name,
                         'location': region,
                         'name': name,
                         'remove_default_node_pool': True,
+                        #Builds the cluster on the green network and subnetwork
                         'network': f'${{google_compute_network.{VERSION}.name}}',
                         'subnetwork': f'${{google_compute_subnetwork.{VERSION}.name}}'
                     }
