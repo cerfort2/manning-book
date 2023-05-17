@@ -9,7 +9,7 @@ PORT = 8080
 
 shared_name = f'{TEAM}-{ENVIRONMENT}-shared'
 
-default_version = 'blue'
+default_version = 'blue' #Sends all traffic from the load balancer to the blue environment by default
 
 services_list = [
     {
@@ -96,7 +96,7 @@ def _generate_backend_services(services):
         })
     return backend_services_list
 
-
+#Uses the module to create the JSON configuration for the load balancer to send 10% of traffic to green and 90% of traffic to blue
 def load_balancer(name, default_version, services):
     return [{
         'google_compute_global_forwarding_rule': {
@@ -125,8 +125,10 @@ def load_balancer(name, default_version, services):
                 'url_map': f'${{google_compute_url_map.{TEAM}.id}}'
             }]
         },
+         #Creates the Google compute URL map (load-balancing rule) by using a Terraform resource based on the path, blue and green environments, and weight
         'google_compute_url_map': {
             TEAM: [{
+                #Sends all traffic from the load balancer to the blue environment by default
                 'default_service': (
                     '${google_compute_backend_service.'
                     f'{default_version}.id}}'
@@ -150,6 +152,7 @@ def load_balancer(name, default_version, services):
                             '/*'
                         ],
                         'route_action': {
+                            #Sets routing rules on the load balancer to send 10% of traffic to green and 90% of traffic to blue.
                             'weighted_backend_services':
                                 _generate_backend_services(
                                     services)
