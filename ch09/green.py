@@ -9,6 +9,7 @@ zone = f'{REGION}-a'
 #Uses the module to create the JSON configuration for the network and subnetwork for the green network
 network_name = f'{TEAM}-{ENVIRONMENT}-network-{VERSION}'
 
+#Creates a template for the server name, which includes the team, environment, and version (blue or green)
 server_name = f'{TEAM}-{ENVIRONMENT}-server-{VERSION}'
 
 #Labels the new version of the cluster “green”
@@ -23,8 +24,8 @@ labels = {
     'automated': True
 }
 
-
-def build(): #Uses the module to create the JSON configuration for the network, subnetwork, and cluster for the green network
+#Uses the module to create the JSON configuration for the network, subnetwork, cluster, and server for the green network
+def build(): 
     return network() + \
         server0() + \
         server1() + \
@@ -108,11 +109,12 @@ def cluster(name=cluster_name,
         }
     ]
 
-
+#Copies and pastes each server configuration. This code snippet features the first server, server0. Other server configurations are omitted for clarity.
 def server0(name=f'{server_name}-0',
             zone=zone):
     return [
         {
+            #Creates a small Google compute instance (server) by using a Terraform resource on the green network
             'google_compute_instance': {
                 f'{VERSION}_0': [{
                     'allow_stopping_for_update': True,
@@ -127,6 +129,7 @@ def server0(name=f'{server_name}-0',
                     'network_interface': [{
                         'subnetwork': f'${{google_compute_subnetwork.{VERSION}.name}}',
                         'access_config': {
+                            #Sets the network tier to use premium networking. This enables compatibility with the underlying subnet, which uses global routing.
                             'network_tier': 'PREMIUM'
                         }
                     }],
