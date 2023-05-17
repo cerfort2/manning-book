@@ -1,10 +1,12 @@
 TEAM = 'sundew'
 ENVIRONMENT = 'production'
-VERSION = 'green'
+VERSION = 'green' #Sets the name of the new network version to “green”
 REGION = 'us-central1'
-IP_RANGE = '10.0.0.0/24'
+IP_RANGE = '10.0.0.0/24' #Keeps the IP address range for green the same as the blue network. GCP allows the two networks to have the same CIDR block if you have not set up peering.
 
 zone = f'{REGION}-a'
+
+#Uses the module to create the JSON configuration for the network and subnetwork for the green network
 network_name = f'{TEAM}-{ENVIRONMENT}-network-{VERSION}'
 
 server_name = f'{TEAM}-{ENVIRONMENT}-server-{VERSION}'
@@ -33,16 +35,16 @@ def network(name=network_name,
             ip_range=IP_RANGE):
     return [
         {
-            'google_compute_network': {
+            'google_compute_network': { #Creates the Google network by using a Terraform resource based on the name and a global routing mode
                 VERSION: [{
                     'name': name,
                     'auto_create_subnetworks': False,
-                    'routing_mode': 'GLOBAL'
+                    'routing_mode': 'GLOBAL' #Updates the green network’s routing mode to global to expose routes globally
                 }]
             }
         },
         {
-            'google_compute_subnetwork': {
+            'google_compute_subnetwork': { #Creates the Google subnetwork by using a Terraform resource based on the name, region, network, and IP address range
                 VERSION: [{
                     'name': f'{name}-subnet',
                     'region': region,
