@@ -1,17 +1,20 @@
 TEAM = 'sundew'
 ENVIRONMENT = 'production'
-VERSION = 'passive'
-REGION = 'us-west1'
-IP_RANGE = '10.0.1.0/24'
+VERSION = 'passive' #Sets the version to identify the passive environment
+REGION = 'us-west1' #Changes the region from us-central1 to us-west1 for the passive environment
+IP_RANGE = '10.0.1.0/24' #Updates a different IP address range for the passive environment to avoid sending requests
 
 zone = f'{REGION}-a'
 network_name = f'{TEAM}-{ENVIRONMENT}-network-{VERSION}'
+
+#Remaining variables and functions reference the constants for the passive environment, including region.
 server_name = f'{TEAM}-{ENVIRONMENT}-server-{VERSION}'
 
 cluster_name = f'{TEAM}-{ENVIRONMENT}-cluster-{VERSION}'
 cluster_nodes = f'{TEAM}-{ENVIRONMENT}-cluster-nodes-{VERSION}'
 cluster_service_account = f'{TEAM}-{ENVIRONMENT}-sa-{VERSION}'
 
+#Defines labels for resources so you can identify the production environment
 labels = {
     'team': TEAM,
     'environment': ENVIRONMENT,
